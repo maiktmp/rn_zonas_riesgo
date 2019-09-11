@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "659250775850",
+    "firebase_url": "https://municipios-3e54c.firebaseio.com",
+    "project_id": "municipios-3e54c",
+    "storage_bucket": "municipios-3e54c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:659250775850:android:e12a0ec054290605ee0053",
+        "android_client_info": {
+          "package_name": "com.desastres_miguel"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "659250775850-qd47k8gqs3ns44bqmmhmjdb2m2he6jqt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDGznV0smKgMaIpDoNCELGaQZqejWbuudo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "659250775850-qd47k8gqs3ns44bqmmhmjdb2m2he6jqt.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
