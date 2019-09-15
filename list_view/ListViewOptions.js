@@ -8,6 +8,7 @@ import {createAppContainer} from 'react-navigation';
 import ListViewTowns from './ListViewTowns';
 import TownView from '../town/TownView';
 import UpdateTown from '../town/UpdateTown';
+import CreateTown from '../town/CreateTown';
 
 const styles = StyleSheet.create({
   container: {
@@ -93,6 +94,9 @@ const AppNavigator = createStackNavigator({
   },
   UpdateTown: {
     screen: UpdateTown,
+  },
+  CreateTown: {
+    screen: CreateTown,
   },
 }, {
   initialRouteName: 'MainList',

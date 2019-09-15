@@ -1,79 +1,102 @@
 import React from 'react';
-import {View, ScrollView, Text, Button, ActivityIndicator} from 'react-native';
+import {View, ScrollView, Text, Button, ActivityIndicator, Alert} from 'react-native';
 import AppStyles from '../styles/AppStyles';
 import {TextField} from 'react-native-material-textfield';
 import ToggleSwitch from 'toggle-switch-react-native';
 import firebase from 'react-native-firebase';
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps'; // remove PROVIDER_GOOGLE import if not using Google Maps
 
-class UpdateTown extends React.Component {
+class CreateTown extends React.Component {
   constructor(props) {
     super(props);
-    this.onUpdateTown = this.onUpdateTown.bind(this);
+    this.onCreateTown = this.onCreateTown.bind(this);
+    this.ref = firebase.firestore().collection('municipios');
     this.state = {
       isLoading: false,
-      id: this.props.navigation.getParam('id'),
-      image: this.props.navigation.getParam('image'),
-      altitud: this.props.navigation.getParam('altitud'),
-      cabecera: this.props.navigation.getParam('cabecera'),
-      clima: this.props.navigation.getParam('clima'),
-      cuerposA: this.props.navigation.getParam('cuerposA'),
-      derrumbe: this.props.navigation.getParam('derrumbe'),
-      deslave: this.props.navigation.getParam('deslave'),
-      elevaciones: this.props.navigation.getParam('elevaciones'),
-      igecem: this.props.navigation.getParam('igecem'),
-      incendio: this.props.navigation.getParam('incendio'),
-      indust: this.props.navigation.getParam('indust'),
-      inundacion: this.props.navigation.getParam('inundacion'),
-      latitud: this.props.navigation.getParam('latitud'),
-      longitud: this.props.navigation.getParam('longitud'),
-      masExtenso: this.props.navigation.getParam('masExtenso'),
-      masPoblado: this.props.navigation.getParam('masPoblado'),
-      menosExtenso: this.props.navigation.getParam('menosExtenso'),
-      nombre: this.props.navigation.getParam('nombre'),
-      rios: this.props.navigation.getParam('rios'),
-      significado: this.props.navigation.getParam('significado'),
-      sismo: this.props.navigation.getParam('sismo'),
-      superficie: this.props.navigation.getParam('superficie'),
-      vulcanismo: this.props.navigation.getParam('vulcanismo'),
+      id: undefined,
+      image: undefined,
+      altitud: undefined,
+      cabecera: undefined,
+      clima: undefined,
+      cuerposA: undefined,
+      derrumbe: '',
+      deslave: '',
+      elevaciones: undefined,
+      igecem: undefined,
+      incendio: '',
+      indust: undefined,
+      inundacion: '',
+      latitud: 19.253836,
+      longitud: -99.7065578,
+      masExtenso: undefined,
+      masPoblado: undefined,
+      menosExtenso: undefined,
+      nombre: undefined,
+      rios: undefined,
+      significado: undefined,
+      sismo: '',
+      superficie: undefined,
+      vulcanismo: '',
     };
   }
 
-  onUpdateTown() {
+  onCreateTown() {
+    const _validateIfExist = (cb) => {
+      const doc = this.ref.doc(this.state.igecem)
+        .get()
+        .then(response => {
+          const town = response.data();
+          town === undefined ? cb(false) : cb(true);
+        });
+    };
     this.setState({isLoading: true});
-    const doc = firebase
-      .firestore()
-      .collection('municipios')
-      .doc(this.state.id);
-
-    doc.update({
-      altitud: this.state.altitud,
-      cabecera: this.state.cabecera,
-      clima: this.state.clima,
-      cuerposA: this.state.cuerposA,
-      derrumbe: this.state.derrumbe,
-      deslave: this.state.deslave,
-      elevaciones: this.state.elevaciones,
-      igecem: this.state.igecem,
-      incendio: this.state.incendio,
-      indust: this.state.indust,
-      inundacion: this.state.inundacion,
-      latitud: this.state.latitud,
-      longitud: this.state.longitud,
-      masExtenso: this.state.masExtenso,
-      masPoblado: this.state.masPoblado,
-      menosExtenso: this.state.menosExtenso,
-      nombre: this.state.nombre,
-      rios: this.state.rios,
-      significado: this.state.significado,
-      sismo: this.state.sismo,
-      superficie: this.state.superficie,
-      vulcanismo: this.state.vulcanismo,
-    })
-      .then(() => {
+    _validateIfExist(exist => {
+      console.log(exist);
+      if (exist) {
         this.setState({isLoading: false});
-        this.props.navigation.goBack();
-      });
+        Alert.alert(
+          'Error',
+          'Ya existe un registro con el mismo IGECEM',
+        );
+        return null;
+      } else {
+        firebase
+          .firestore()
+          .collection('municipios')
+          .doc(this.state.igecem)
+          .set({
+            altitud: this.state.altitud,
+            cabecera: this.state.cabecera,
+            clima: this.state.clima,
+            cuerposA: this.state.cuerposA,
+            derrumbe: this.state.derrumbe,
+            deslave: this.state.deslave,
+            elevaciones: this.state.elevaciones,
+            igecem: this.state.igecem,
+            incendio: this.state.incendio,
+            indust: this.state.indust,
+            inundacion: this.state.inundacion,
+            latitud: this.state.latitud,
+            longitud: this.state.longitud,
+            masExtenso: this.state.masExtenso,
+            masPoblado: this.state.masPoblado,
+            menosExtenso: this.state.menosExtenso,
+            nombre: this.state.nombre,
+            rios: this.state.rios,
+            significado: this.state.significado,
+            sismo: this.state.sismo,
+            superficie: this.state.superficie,
+            vulcanismo: this.state.vulcanismo,
+          })
+          .then(() => {
+            this.setState({isLoading: false});
+            this.props.navigation.goBack();
+          })
+          .catch((error) => {
+            console.log('error', error);
+          });
+      }
+    });
   }
 
   render() {
@@ -110,6 +133,13 @@ class UpdateTown extends React.Component {
             />
           </MapView>
           <Text style={AppStyles.headline}> Datos principales </Text>
+
+          <TextField
+            label='IGECEM'
+            value={this.state.igecem}
+            onChangeText={(igecem) => this.setState({igecem: igecem})}
+          />
+
           <TextField
             label='Nombre'
             value={this.state.nombre}
@@ -246,10 +276,10 @@ class UpdateTown extends React.Component {
             size="small"
             onToggle={isOn => this.setState({derrumbe: isOn ? 'Si' : ''})}
           />
-          <Button style={{margin: 10}} title={'Actualizar'} onPress={this.onUpdateTown}/>
+          <Button style={{margin: 10}} title={'Crear'} onPress={this.onCreateTown}/>
         </ScrollView>
       </View>);
   }
 }
 
-export default UpdateTown;
+export default CreateTown;

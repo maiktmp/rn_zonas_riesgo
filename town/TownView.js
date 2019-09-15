@@ -1,5 +1,5 @@
 import React from 'react';
-import {Dimensions, ScrollView, StyleSheet, Text, View} from 'react-native';
+import {ActivityIndicator, Dimensions, ScrollView, StyleSheet, Text, View} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Info from '../list_view/data';
 import firebase from 'react-native-firebase';
@@ -7,11 +7,12 @@ import {Rows, Table} from 'react-native-table-component';
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps'; // remove PROVIDER_GOOGLE import if not using Google Maps
 import ActionButton from 'react-native-action-button';
 import Icon from 'react-native-vector-icons/Ionicons';
+import AppStyles from '../styles/AppStyles';
 
 
 const styles = StyleSheet.create({
   fullImage: {
-    height: 300,
+    height: 250,
     width: Dimensions.get('window').width,
   },
   container: {backgroundColor: '#fff', flex: 1},
@@ -37,7 +38,7 @@ class TownView extends React.Component {
     super(props);
     this.onUpdateTown = this.onUpdateTown.bind(this);
     this.ref = firebase.firestore().collection('municipios');
-
+    console.disableYellowBox = true;
     this.state = {
       isLoading: true,
       id: this.props.navigation.getParam('id'),
@@ -134,6 +135,14 @@ class TownView extends React.Component {
   fetchTableDta() {
     let table = [];
     if (this.state.igecem !== '') {
+      table.push(['Nombre', this.state.nombre]);
+    }
+
+    if (this.state.igecem !== '') {
+      table.push(['Cabecera', this.state.cabecera]);
+    }
+
+    if (this.state.igecem !== '') {
       table.push(['IGECEM', this.state.igecem]);
     }
     if (this.state.significado !== '') {
@@ -197,7 +206,10 @@ class TownView extends React.Component {
   render() {
     this.getTownInfo();
     if (this.state.isLoading) {
-      return (<Text>Cargando..</Text>);
+      return (
+        <View style={[AppStyles.container, AppStyles.horizontal]}>
+          <ActivityIndicator size="large" color="#0000ff"/>
+        </View>);
     }
     return (<View style={styles.container}>
 
@@ -243,9 +255,8 @@ class TownView extends React.Component {
       <ActionButton
         buttonColor="rgba(231,76,60,1)"
         onPress={this.onUpdateTown}
-        renderIcon={() => <Icon name="md-create" style={styles.actionButtonIcon}/>}
-      >
-      </ActionButton>
+        renderIcon={() => <Icon name="md-create" color="#FFF" size={20}/>}
+      />
     </View>);
   }
 }
