@@ -29,6 +29,8 @@ target 'desastres_miguel' do
 
   pod 'RNFirebase', :path => '../node_modules/react-native-firebase'
 
+  pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
+
   target 'desastres_miguelTests' do
     inherit! :search_paths
     # Pods for testing

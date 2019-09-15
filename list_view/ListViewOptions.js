@@ -1,15 +1,13 @@
 import React from 'react';
 import {FlatList, SafeAreaView, StyleSheet, Text, TouchableHighlight, View} from 'react-native';
 import Info from './data';
-import findPhotos from '../place/maps';
-import fb_init from '../fb/FBConf';
 import createStackNavigator from 'react-navigation-stack/src/navigators/createStackNavigator';
 import ListViewZones from './ListViewZones';
 import Place from '../place/Place';
 import {createAppContainer} from 'react-navigation';
 import ListViewTowns from './ListViewTowns';
-import firebase from 'react-native-firebase';
 import TownView from '../town/TownView';
+import UpdateTown from '../town/UpdateTown';
 
 const styles = StyleSheet.create({
   container: {
@@ -92,6 +90,9 @@ const AppNavigator = createStackNavigator({
   },
   ViewTown: {
     screen: TownView,
+  },
+  UpdateTown: {
+    screen: UpdateTown,
   },
 }, {
   initialRouteName: 'MainList',

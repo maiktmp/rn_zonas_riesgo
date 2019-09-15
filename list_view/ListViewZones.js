@@ -1,8 +1,6 @@
 import React from 'react';
 import {FlatList, SafeAreaView, StyleSheet, Text, TouchableHighlight, View} from 'react-native';
 import Info from './data';
-import fb_init from '../fb/FBConf';
-
 
 const styles = StyleSheet.create({
   container: {

@@ -1,17 +1,22 @@
 import React from 'react';
-import {Dimensions, StyleSheet, View, Text} from 'react-native';
+import {Dimensions, ScrollView, StyleSheet, Text, View} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Info from '../list_view/data';
 import firebase from 'react-native-firebase';
-import {Table, TableWrapper, Row, Rows, Col, Cols, Cell} from 'react-native-table-component';
+import {Rows, Table} from 'react-native-table-component';
+import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps'; // remove PROVIDER_GOOGLE import if not using Google Maps
+import ActionButton from 'react-native-action-button';
+import Icon from 'react-native-vector-icons/Ionicons';
+
 
 const styles = StyleSheet.create({
   fullImage: {
     height: 300,
     width: Dimensions.get('window').width,
   },
-  container: {backgroundColor: '#fff'},
+  container: {backgroundColor: '#fff', flex: 1},
   head: {height: 40, backgroundColor: '#f1f8ff'},
+  table: {borderWidth: 2, borderColor: '#c8e1ff', marginBottom: 2},
   text: {margin: 6},
   headline: {
     textAlign: 'center',
@@ -30,9 +35,11 @@ class TownView extends React.Component {
 
   constructor(props) {
     super(props);
+    this.onUpdateTown = this.onUpdateTown.bind(this);
     this.ref = firebase.firestore().collection('municipios');
 
     this.state = {
+      isLoading: true,
       id: this.props.navigation.getParam('id'),
       image: undefined,
       altitud: undefined,
@@ -66,6 +73,9 @@ class TownView extends React.Component {
 
   getTownInfo() {
     const doc = this.ref.doc(this.state.id).get();
+    if (!this.state.isLoading) {
+      return null;
+    }
     doc
       .then(response => {
         const town = response.data();
@@ -93,8 +103,32 @@ class TownView extends React.Component {
           sismo: town.sismo,
           superficie: town.superficie,
           vulcanismo: town.vulcanismo,
+          isLoading: false,
         });
       });
+  }
+
+  fetchRiskZone() {
+    let table = [];
+
+    table.push(['Sismo', this.state.sismo !== '' ? 'Si' : 'No']);
+
+
+    table.push(['Inundación', this.state.inundacion !== '' ? 'Si' : 'No']);
+
+
+    table.push(['Deslave', this.state.deslave !== '' ? 'Si' : 'No']);
+
+
+    table.push(['Incendio', this.state.incendio !== '' ? 'Si' : 'No']);
+
+
+    table.push(['Vulcanismo', this.state.vulcanismo !== '' ? 'Si' : 'No']);
+
+
+    table.push(['Derrumbe', this.state.derrumbe !== '' ? 'Si' : 'No']);
+
+    return table;
   }
 
   fetchTableDta() {
@@ -132,9 +166,41 @@ class TownView extends React.Component {
     return table;
   }
 
+  onUpdateTown() {
+    this.props.navigation.push('UpdateTown', {
+      id: this.state.id,
+      cabecera: this.state.cabecera,
+      altitud: this.state.altitud,
+      clima: this.state.clima,
+      cuerposA: this.state.cuerposA,
+      derrumbe: this.state.derrumbe,
+      deslave: this.state.deslave,
+      elevaciones: this.state.elevaciones,
+      igecem: this.state.igecem,
+      incendio: this.state.incendio,
+      indust: this.state.indust,
+      inundacion: this.state.inundacion,
+      latitud: this.state.latitud,
+      longitud: this.state.longitud,
+      masExtenso: this.state.masExtenso,
+      masPoblado: this.state.masPoblado,
+      menosExtenso: this.state.menosExtenso,
+      nombre: this.state.nombre,
+      rios: this.state.rios,
+      significado: this.state.significado,
+      sismo: this.state.sismo,
+      superficie: this.state.superficie,
+      vulcanismo: this.state.vulcanismo,
+    });
+  }
+
   render() {
     this.getTownInfo();
+    if (this.state.isLoading) {
+      return (<Text>Cargando..</Text>);
+    }
     return (<View style={styles.container}>
+
       <FastImage
         style={styles.fullImage}
         source={{
@@ -144,10 +210,42 @@ class TownView extends React.Component {
         }}
         resizeMode={FastImage.resizeMode.cover}
       />
-      <Text style={styles.headline}>Información</Text>
-      <Table borderStyle={{borderWidth: 2, borderColor: '#c8e1ff'}}>
-        <Rows data={this.fetchTableDta()} textStyle={styles.text}/>
-      </Table>
+      <ScrollView>
+        <MapView
+          provider={PROVIDER_GOOGLE}
+          style={styles.fullImage}
+          region={{
+            latitude: this.state.latitud,
+            longitude: this.state.longitud,
+            latitudeDelta: 0.1,
+            longitudeDelta: 0.1,
+          }}
+          initialRegion={{
+            latitude: this.state.latitud,
+            longitude: this.state.longitud,
+            latitudeDelta: 0.1,
+            longitudeDelta: 0.1,
+          }}>
+          <Marker
+            coordinate={{latitude: this.state.latitud, longitude: this.state.longitud}}
+            title={this.state.cabecera}
+          />
+        </MapView>
+        <Text style={styles.headline}>Información</Text>
+        <Table borderStyle={styles.table}>
+          <Rows data={this.fetchTableDta()} textStyle={styles.text}/>
+        </Table>
+        <Text style={styles.headline}>Riesgo</Text>
+        <Table borderStyle={styles.table}>
+          <Rows data={this.fetchRiskZone()} textStyle={styles.text}/>
+        </Table>
+      </ScrollView>
+      <ActionButton
+        buttonColor="rgba(231,76,60,1)"
+        onPress={this.onUpdateTown}
+        renderIcon={() => <Icon name="md-create" style={styles.actionButtonIcon}/>}
+      >
+      </ActionButton>
     </View>);
   }
 }
