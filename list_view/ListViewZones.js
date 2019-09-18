@@ -23,10 +23,10 @@ const styles = StyleSheet.create({
   },
 });
 
-function Item({title, onPlaceClick}) {
+function Item({id, title, onZoneCLick}) {
   return (
     <TouchableHighlight onPress={e => {
-      onPlaceClick(title);
+      onZoneCLick(id);
     }} underlayColor="white" style={styles.item}>
       <Text style={styles.title}>{title}</Text>
     </TouchableHighlight>
@@ -35,6 +35,17 @@ function Item({title, onPlaceClick}) {
 
 
 class ListViewZones extends React.Component {
+  constructor(props) {
+    super(props);
+    this.onZoneClick = this.onZoneClick.bind(this);
+  }
+
+  onZoneClick(id) {
+    this.props.navigation.push('ListTowns', {
+      zones: [id],
+    });
+  }
+
   render() {
     return (
       <SafeAreaView style={styles.container}>
@@ -44,8 +55,9 @@ class ListViewZones extends React.Component {
           )}
           data={Info.Zones}
           renderItem={({item}) =>
-            <Item title={item.name}
-                  onPlaceClick={this.onPLaceClick}/>
+            <Item id={item.id}
+                  title={item.name}
+                  onZoneCLick={this.onZoneClick}/>
           }
           keyExtractor={item => item.id}
         />

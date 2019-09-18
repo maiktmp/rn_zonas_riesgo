@@ -1,14 +1,6 @@
 import React from 'react';
 import {FlatList, SafeAreaView, StyleSheet, Text, TouchableHighlight, View} from 'react-native';
 import Info from './data';
-import createStackNavigator from 'react-navigation-stack/src/navigators/createStackNavigator';
-import ListViewZones from './ListViewZones';
-import Place from '../place/Place';
-import {createAppContainer} from 'react-navigation';
-import ListViewTowns from './ListViewTowns';
-import TownView from '../town/TownView';
-import UpdateTown from '../town/UpdateTown';
-import CreateTown from '../town/CreateTown';
 
 const styles = StyleSheet.create({
   container: {
@@ -76,30 +68,4 @@ class ListViewOptions extends React.Component {
   }
 }
 
-const AppNavigator = createStackNavigator({
-  ListTowns: {
-    screen: ListViewTowns,
-  },
-  ListZones: {
-    screen: ListViewZones,
-  },
-  Place: {
-    screen: Place,
-  },
-  MainList: {
-    screen: ListViewOptions,
-  },
-  ViewTown: {
-    screen: TownView,
-  },
-  UpdateTown: {
-    screen: UpdateTown,
-  },
-  CreateTown: {
-    screen: CreateTown,
-  },
-}, {
-  initialRouteName: 'MainList',
-});
-
-export default createAppContainer(AppNavigator);
+export default ListViewOptions;

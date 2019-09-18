@@ -31,15 +31,16 @@ const styles = StyleSheet.create({
 
 class TownView extends React.Component {
   static navigationOptions = ({navigation}) => ({
-    title: navigation.getParam('cabecera', 'Municipio'),
+    title: 'Detalles de municipio',
   });
 
   constructor(props) {
     super(props);
     this.onUpdateTown = this.onUpdateTown.bind(this);
     this.ref = firebase.firestore().collection('municipios');
-    console.disableYellowBox = true;
+    // console.disableYellowBox = true;
     this.state = {
+      user: 'consulor',
       isLoading: true,
       id: this.props.navigation.getParam('id'),
       image: undefined,
@@ -69,18 +70,25 @@ class TownView extends React.Component {
   }
 
   componentDidMount(): void {
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user === null) return user;
+      // console.log(user);
+      if (user._user.email === 'admin@desmov.com') {
+        this.setState({user: 'admin'});
+      }
+    });
     this.setState({image: Info.TownImage.filter(town => town.id === this.state.id)[0].image_url});
   }
 
   getTownInfo() {
     const doc = this.ref.doc(this.state.id).get();
-    if (!this.state.isLoading) {
-      return null;
-    }
+    // if (!this.state.isLoading) {
+    //   return null;
+    // }
     doc
       .then(response => {
         const town = response.data();
-        console.log(town);
+        // console.log(town);
         this.setState({
           cabecera: town.cabecera,
           altitud: town.altitud,
@@ -204,6 +212,7 @@ class TownView extends React.Component {
   }
 
   render() {
+    // console.log(this.state.user);
     this.getTownInfo();
     if (this.state.isLoading) {
       return (
@@ -252,11 +261,13 @@ class TownView extends React.Component {
           <Rows data={this.fetchRiskZone()} textStyle={styles.text}/>
         </Table>
       </ScrollView>
-      <ActionButton
-        buttonColor="rgba(231,76,60,1)"
-        onPress={this.onUpdateTown}
-        renderIcon={() => <Icon name="md-create" color="#FFF" size={20}/>}
-      />
+      {
+        this.state.user === 'admin' && <ActionButton
+          buttonColor="rgba(231,76,60,1)"
+          onPress={this.onUpdateTown}
+          renderIcon={() => <Icon name="md-create" color="#FFF" size={20}/>}
+        />
+      }
     </View>);
   }
 }

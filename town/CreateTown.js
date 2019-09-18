@@ -7,6 +7,9 @@ import firebase from 'react-native-firebase';
 import MapView, {Marker, PROVIDER_GOOGLE} from 'react-native-maps'; // remove PROVIDER_GOOGLE import if not using Google Maps
 
 class CreateTown extends React.Component {
+  static navigationOptions = ({navigation}) => ({
+    title: 'Crear de municipio',
+  });
   constructor(props) {
     super(props);
     this.onCreateTown = this.onCreateTown.bind(this);

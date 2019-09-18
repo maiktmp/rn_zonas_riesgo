@@ -4,6 +4,6 @@
 
 import {AppRegistry} from 'react-native';
 import {name as appName} from './app.json';
-import ListViewOptions from './list_view/ListViewOptions';
+import Login from './login/Login';
 
-AppRegistry.registerComponent(appName, () => ListViewOptions);
+AppRegistry.registerComponent(appName, () => Login);

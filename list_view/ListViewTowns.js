@@ -1,9 +1,8 @@
 import React from 'react';
-import {FlatList, SafeAreaView, StyleSheet, Text, TouchableHighlight, View} from 'react-native';
+import {FlatList, StyleSheet, Text, TouchableHighlight, View, ActivityIndicator} from 'react-native';
 import firebase from 'react-native-firebase';
 import ActionButton from 'react-native-action-button';
-import Icon from 'react-native-vector-icons/index';
-import MapServices from '../place/maps';
+import AppStyles from '../styles/AppStyles';
 
 const styles = StyleSheet.create({
   container: {
@@ -41,13 +40,21 @@ class ListViewTowns extends React.Component {
   constructor(props) {
     super(props);
     this.onAddTown = this.onAddTown.bind(this);
+    this.zones = this.props.navigation.getParam('zones');
     this.state = {
       isLoading: true,
       towns: [],
+      user: 'consulor',
     };
   }
 
   componentDidMount(): void {
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user === null) return user;
+      if (user._user.email === 'admin@desmov.com') {
+        this.setState({user: 'admin'});
+      }
+    });
     this.downloadFirebase();
   }
 
@@ -57,13 +64,34 @@ class ListViewTowns extends React.Component {
     ref.onSnapshot(querySnapshot => {
       let towns = [];
       querySnapshot.forEach((doc) => {
-        MapServices.findPhotos(doc.data().igecem, doc.data().cabecera);
-        // console.log(doc.data());
+        if (this.zones !== undefined) {
+          if (doc.data().deslave === '' && this.zones.includes('1')) {
+            return null;
+          }
+          if (doc.data().sismo === '' && this.zones.includes('2')) {
+            return null;
+          }
+          if (doc.data().incendio === '' && this.zones.includes('3')) {
+            return null;
+          }
+          if (doc.data().derrumbe === '' && this.zones.includes('4')) {
+            return null;
+          }
+          if (doc.data().vulcanismo === '' && this.zones.includes('5')) {
+            return null;
+          }
+          if (doc.data().inundacion === '' && this.zones.includes('6')) {
+            return null;
+          }
+
+        }
+        console.log(doc.data());
         towns.push({
           'id': doc.data().igecem + '',
           'name': doc.data().cabecera,
         });
       });
+      console.log(towns);
       this.setState({
         towns: towns,
         isLoading: false,
@@ -86,7 +114,10 @@ class ListViewTowns extends React.Component {
 
   render() {
     if (this.state.isLoading) {
-      return (<Text>Cargando..</Text>);
+      return (
+        <View style={[AppStyles.container, AppStyles.horizontal]}>
+          <ActivityIndicator size="large" color="#0000ff"/>
+        </View>);
     }
     return (
       <View style={styles.container}>
@@ -102,10 +133,12 @@ class ListViewTowns extends React.Component {
           }
           keyExtractor={item => item.id}
         />
-        <ActionButton
-          buttonColor="rgba(231,76,60,1)"
-          onPress={this.onAddTown}
-        />
+        {
+          this.state.user === 'admin' && <ActionButton
+            buttonColor="rgba(231,76,60,1)"
+            onPress={this.onAddTown}
+          />
+        }
       </View>
 
     );
